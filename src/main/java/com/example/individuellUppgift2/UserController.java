@@ -46,24 +46,30 @@ public class UserController {
     }
 
     //Endpoints /api/login
+    // Endpoints /api/login
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserDTO> loginUser(@RequestBody UserDTO userDTO) {
         log.info("Received login request for username: {}", userDTO.getUsername());
         Optional<AppUser> optionalUser = userRepository.findByUsername(userDTO.getUsername());
         if (optionalUser.isPresent()) {
             AppUser user = optionalUser.get();
             if (passwordEncoder.matches(userDTO.getPassword(), user.getPassword())) {
                 log.info("Login successful");
-                return ResponseEntity.ok("Login successful");
+
+                // Create a UserDTO with active id and username
+                UserDTO loggedInUserDTO = new UserDTO(user.getId(), user.getUsername());
+
+                return ResponseEntity.ok(loggedInUserDTO);
             } else {
                 log.warn("Incorrect password for user: {}", userDTO.getUsername());
-                return ResponseEntity.badRequest().body("Incorrect password");
+                return ResponseEntity.badRequest().body(new UserDTO("Incorrect password"));
             }
         } else {
             log.warn("User not found: {}", userDTO.getUsername());
-            return ResponseEntity.badRequest().body("User not found");
+            return ResponseEntity.badRequest().body(new UserDTO("User not found"));
         }
     }
+
 
     //Endpoints /api/users
     @GetMapping("/users")
