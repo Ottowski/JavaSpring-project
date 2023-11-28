@@ -30,7 +30,10 @@ public class UserController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // Endpoint for user registration.
+    // Endpoint for user register. http://localhost:8080/api/register {
+    //  "username": "test@test.com",
+    //  "password": "test"
+    //}
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody UserDTO userDTO) {
         // Log registration request.
@@ -51,7 +54,10 @@ public class UserController {
         return ResponseEntity.ok("User registered successfully");
     }
 
-    // Endpoint for user login.
+    // Endpoint for user login. http://localhost:8080/api/login {
+    //  "username": "test@test.com",
+    //  "password": "test"
+    //}
     @PostMapping("/login")
     public ResponseEntity<UserDTO> loginUser(@RequestBody UserDTO userDTO) {
         // Log login request.
@@ -69,8 +75,8 @@ public class UserController {
             if (passwordEncoder.matches(userDTO.getPassword(), user.getPassword())) {
                 log.info("Login successful");
 
-                // Create a UserDTO with active id and username.
-                UserDTO loggedInUserDTO = new UserDTO(user.getId(), user.getUsername());
+                // Create a UserDTO with active id, username, and password.
+                UserDTO loggedInUserDTO = new UserDTO(user.getId(), user.getUsername(), user.getPassword());
 
                 return ResponseEntity.ok(loggedInUserDTO);
             } else {
@@ -82,4 +88,5 @@ public class UserController {
             return ResponseEntity.badRequest().body(new UserDTO(user.getId(), "User not found"));
         }
     }
+
 }
