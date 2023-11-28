@@ -1,6 +1,7 @@
 // CustomUserDetailsService class implements the UserDetailsService interface to load user details.
 package com.example.individuellUppgift2;
 
+import com.example.individuellUppgift2.Repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

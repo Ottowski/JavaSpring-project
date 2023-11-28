@@ -59,8 +59,9 @@ public class SecurityConfig {
 
                 // Allow unauthenticated access to registration and login endpoints.
                 .authorizeHttpRequests(configure -> configure
-                        .requestMatchers(HttpMethod.POST,"/api/register","/api/login").permitAll()
-
+                        .requestMatchers(HttpMethod.POST,"/api/register","/api/login","api/folders", "/api/files/upload").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/files/download").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/files/delete").authenticated()
                         // Require authentication for all other requests.
                         .anyRequest().authenticated())
 

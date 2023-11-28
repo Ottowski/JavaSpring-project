@@ -1,6 +1,9 @@
 // UserService class handles user registration and login logic.
-package com.example.individuellUppgift2;
+package com.example.individuellUppgift2.Service;
 
+import com.example.individuellUppgift2.AppEntity.AppUser;
+import com.example.individuellUppgift2.DTO.UserDTO;
+import com.example.individuellUppgift2.Repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Optional;

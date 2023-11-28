@@ -1,5 +1,5 @@
 // AppUser class represents a user entity with UserDetails implementation.
-package com.example.individuellUppgift2;
+package com.example.individuellUppgift2.AppEntity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

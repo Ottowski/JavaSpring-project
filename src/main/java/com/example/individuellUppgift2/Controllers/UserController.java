@@ -1,6 +1,13 @@
 // UserController class handles HTTP requests related to user actions.
-package com.example.individuellUppgift2;
+package com.example.individuellUppgift2.Controllers;
 
+import com.example.individuellUppgift2.AppEntity.AppUser;
+import com.example.individuellUppgift2.DTO.FolderDTO;
+import com.example.individuellUppgift2.DTO.UserDTO;
+import com.example.individuellUppgift2.Service.FileService;
+import com.example.individuellUppgift2.Service.FolderService;
+import com.example.individuellUppgift2.SecurityConfig;
+import com.example.individuellUppgift2.Repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
-
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 @RestController
 @RequestMapping("/api")
 public class UserController {
@@ -22,12 +30,29 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
 
     // Logger for logging information.
+
+    private final FolderService folderService;
+
     private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
 
     // Constructor for UserController, injecting dependencies.
-    public UserController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserController(UserRepository userRepository, PasswordEncoder passwordEncoder, FolderService folderService, FileService fileService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.folderService = folderService;
+    }
+
+    // Endpoint for user folder. http://localhost:8080/api/folders
+    @PostMapping("/folders")
+    public ResponseEntity<String> createFolder(@RequestBody FolderDTO folderDTO) {
+        // Get the username of the authenticated user
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+
+        // Call the folder service to create a new folder for the user
+        folderService.createFolder(username, folderDTO.getFolderName());
+
+        return ResponseEntity.ok("Folder created successfully");
     }
 
     // Endpoint for user register. http://localhost:8080/api/register {
