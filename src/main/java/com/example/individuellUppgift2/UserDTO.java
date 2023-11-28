@@ -3,31 +3,32 @@ package com.example.individuellUppgift2;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.UUID;
-
 @Getter
 @Setter
 public class UserDTO {
-
-    private UUID id;
+    private int id;
     private String username;
     private String password;
 
-    // Add a default constructor
     public UserDTO() {
     }
 
-    public UserDTO(String username, String password) {
+    public UserDTO(int id, String username, String password) {
+        this.id = id;
         this.username = username;
         this.password = password;
     }
 
-    public UserDTO(UUID id, String username) {
-        this.id = id;
-        this.username = username;
+    public UserDTO(int id, String userNotFound) {
     }
 
-    public UserDTO(String errorMessage) {
-        this.username = errorMessage;
+    @Override
+    public String toString() {
+        return "UserDTO{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }
+
