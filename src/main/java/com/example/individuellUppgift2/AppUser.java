@@ -1,3 +1,4 @@
+// AppUser class represents a user entity with UserDetails implementation.
 package com.example.individuellUppgift2;
 
 import jakarta.persistence.*;
@@ -8,9 +9,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Entity
 @NoArgsConstructor
@@ -18,24 +16,27 @@ import java.util.stream.Collectors;
 @Setter
 @Table(name = "\"app_user\"")
 public class AppUser implements UserDetails {
+
+    // User ID.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    // User username.
     @Column(name = "username", unique = true)
     private String username;
 
-
+    // User password.
     @Column(name = "password")
     private String password;
 
-
+    // Constructor with username and password.
     public AppUser(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
-
+    // Implementation of UserDetails methods.
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
