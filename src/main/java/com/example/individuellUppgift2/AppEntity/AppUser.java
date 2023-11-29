@@ -3,8 +3,8 @@ package com.example.individuellUppgift2.AppEntity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -14,8 +14,8 @@ import java.util.Collection;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "\"app_user\"")
-public class AppUser implements UserDetails {
+@Table(name = "app_user")
+public class AppUser /*implements UserDetails*/ {
 
     // User ID.
     @Id
@@ -37,7 +37,7 @@ public class AppUser implements UserDetails {
     }
 
     // Implementation of UserDetails methods.
-    @Override
+    /*@Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
     }
@@ -60,5 +60,5 @@ public class AppUser implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
+    }*/
 }
