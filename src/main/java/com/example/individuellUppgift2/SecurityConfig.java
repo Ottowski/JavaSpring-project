@@ -59,6 +59,7 @@ public class SecurityConfig {
 
                 // Allow unauthenticated access to endpoints.
                 .authorizeHttpRequests(configure -> configure
+                        .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/register", "/api/login", "/api/folders/createFolder", "/api/files/upload").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/files/download").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/files/delete").authenticated()
