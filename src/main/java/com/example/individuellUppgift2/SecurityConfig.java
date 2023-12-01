@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .authorizeHttpRequests(configure -> configure
                         .requestMatchers(HttpMethod.POST, "/api/register","/api/login","/api/folders/createFolder","/api/files/upload").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/files/download", "api/users").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/files/download", "api/users", "api/folders/all").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/api/files/delete").permitAll()
                         .anyRequest().permitAll())
                 .sessionManagement(sessionManagement -> sessionManagement
