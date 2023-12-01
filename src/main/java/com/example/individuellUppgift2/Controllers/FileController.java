@@ -4,6 +4,8 @@ import com.example.individuellUppgift2.Service.FileService;
 import com.example.individuellUppgift2.Service.FolderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,7 +18,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 
 @RestController
 @RequestMapping("/api/files")
@@ -44,18 +45,39 @@ public class FileController {
         }
 
         try {
-            // Create the upload directory if it doesn't exist
-            Path uploadPath = Paths.get(UPLOAD_DIR);
-            logger.info("Received file upload request. File name: {}", file.getOriginalFilename());
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
+            // Get the username of the authenticated user
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+            String username;
+
+            // Check if the principal is an instance of UserDetails
+            if (principal instanceof UserDetails) {
+                UserDetails userDetails = (UserDetails) principal;
+                username = userDetails.getUsername();
+            } else if (principal instanceof String) {
+                // If not UserDetails, check if it's a String
+                username = (String) principal;
+            } else {
+                // Handle the case where principal is neither UserDetails nor String
+                throw new IllegalStateException("Unexpected principal type: " + principal.getClass());
+            }
+
+            // Debug statements to check authentication details
+            logger.info("Principal: {}", principal);
+            if (principal instanceof UserDetails) {
+                UserDetails userDetails = (UserDetails) principal;
+                logger.info("Username from UserDetails: {}", userDetails.getUsername());
+            } else if (principal instanceof String) {
+                logger.info("Username from String: {}", principal);
+            } else {
+                logger.warn("Unexpected principal type: {}", principal.getClass());
             }
 
             // Create the folder using folderService
-            folderService.createFolder(folderName);
+            folderService.createFolder(username);
 
             // Define the folder and file paths
-            String folderPath = UPLOAD_DIR + folderName + "/";
+            String folderPath = UPLOAD_DIR + username + "/";
             String filePath = folderPath + file.getOriginalFilename();
 
             // Save the file to the server

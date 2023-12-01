@@ -50,7 +50,7 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .authorizeHttpRequests(configure -> configure
                         .requestMatchers(HttpMethod.POST, "/api/register","/api/login","/api/folders/createFolder").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/files/upload").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/files/upload").permitAll()  // Allow only authenticated users
                         .anyRequest().permitAll())
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
