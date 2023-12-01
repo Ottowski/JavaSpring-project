@@ -19,6 +19,14 @@ public class FolderService {
         folderRepository.save(folder);
         System.out.println("Folder created: " + folderName);
     }
+
+    public AppFolder createFolder(String username, String folderName) {
+        AppFolder folder = new AppFolder();
+        folder.setFolderName(folderName);
+        folderRepository.save(folder);
+        System.out.println("Folder created: " + folderName);
+        return folder;  // Return the created folder entity
+    }
     public void createFolder(String username, Object folderName) {
         System.out.println("Creating folder for user " + username + ": " + folderName);
     }

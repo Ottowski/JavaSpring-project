@@ -18,72 +18,49 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
-
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 @Configuration
 @EnableWebSecurity
+@EntityScan("com.example.individuellUppgift2.AppEntity")
 public class SecurityConfig {
-    // CustomUserDetailsService for loading user details.
+
     private final CustomUserDetailsService CustomUserDetailsService;
-    // Constructor for SecurityConfig, injecting dependencies.
+
     public SecurityConfig(CustomUserDetailsService CustomUserDetailsService) {
         this.CustomUserDetailsService = CustomUserDetailsService;
     }
 
-    // Authentication provider for DaoAuthenticationProvider.
     @Bean
     public AuthenticationProvider authenticationProvider(@Qualifier("customUserDetailsService") UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
-        // Create DaoAuthenticationProvider.
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        // Set password encoder and user details service
         provider.setPasswordEncoder(passwordEncoder);
         provider.setUserDetailsService(userDetailsService);
-        // Return the configured authentication provider.
         return provider;
     }
 
-    // Password encoder for secure password storage.
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // Use BCryptPasswordEncoder for password encoding.
         return new BCryptPasswordEncoder();
     }
 
-    // Configure the default security filter chain.
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-
-        // Configure security settings.
-        http.csrf(AbstractHttpConfigurer::disable)
+        http.csrf(csrf ->csrf.disable())
                 .cors(withDefaults())
-
-                // Allow unauthenticated access to endpoints.
                 .authorizeHttpRequests(configure -> configure
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/register", "/api/login", "/api/folders/createFolder", "/api/files/upload").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/files/download").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/files/delete").authenticated()
-                        // Require authentication for all other requests.
-                        .anyRequest().authenticated())
-
-
-                // Configure session management.
+                        .requestMatchers(HttpMethod.POST, "/api/register","/api/login","/api/folders/createFolder").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/files/upload").permitAll()
+                        .anyRequest().permitAll())
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // Set the authentication provider.
                 .authenticationProvider(authenticationProvider(CustomUserDetailsService, passwordEncoder()));
 
-        // Build and return the configured security filter chain.
         return http.build();
     }
 
-
-    // Create an AuthenticationManager bean.
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        // Return the configured AuthenticationManager.
         return configuration.getAuthenticationManager();
     }
-
-
 }
