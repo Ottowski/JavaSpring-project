@@ -1,4 +1,3 @@
-// UserDTO class represents user data transfer objects.
 package com.example.individuellUppgift2.DTO;
 
 import lombok.Getter;

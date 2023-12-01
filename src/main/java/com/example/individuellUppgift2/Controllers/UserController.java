@@ -1,6 +1,4 @@
-// UserController class handles HTTP requests related to user actions.
 package com.example.individuellUppgift2.Controllers;
-
 import com.example.individuellUppgift2.AppEntity.AppUser;
 import com.example.individuellUppgift2.DTO.FolderDTO;
 import com.example.individuellUppgift2.DTO.UserDTO;

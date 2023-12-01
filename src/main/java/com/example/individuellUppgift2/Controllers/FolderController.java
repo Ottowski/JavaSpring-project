@@ -20,7 +20,6 @@ public class FolderController {
     }
 
     // Endpoint for creating a new folder. http://localhost:8080/api/folders/createFolder
-    // Endpoint for creating a new folder. http://localhost:8080/api/folders/createFolder
     @PostMapping("/createFolder")
     public ResponseEntity<String> createFolder(@RequestBody FolderDTO folderDTO) {
         // Get the principal from the authentication context

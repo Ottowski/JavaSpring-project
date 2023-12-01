@@ -19,6 +19,6 @@ public class AppFolder {
     private String folderName;
 
     @Column(nullable = false)
-    private String username;  // Add this field to store the username
+    private String username;
 }
 
