@@ -11,12 +11,13 @@ import java.util.List;
 @Service
 public class FolderService {
     private final AppFolderRepository folderRepository;
+    private final FileService fileService;
 
     @Autowired
-    public FolderService(AppFolderRepository folderRepository) {
+    public FolderService(AppFolderRepository folderRepository, FileService fileService) {
         this.folderRepository = folderRepository;
+        this.fileService = fileService;
     }
-
     public void createFolder(String username) {
         AppFolder folder = new AppFolder();
         String folderName = ""; // You should set the actual folder name
@@ -33,7 +34,11 @@ public class FolderService {
         for (AppFolder folder : folders) {
             FolderDTO folderDTO = new FolderDTO();
             folderDTO.setFolderName(folder.getFolderName());
-            // You may want to set other properties as needed
+
+            // Fetch file names associated with the folder
+            List<String> fileNames = fileService.getFilesInFolder(username, folder.getFolderName());
+            folderDTO.setFiles(fileNames);
+
             folderDTOs.add(folderDTO);
         }
 

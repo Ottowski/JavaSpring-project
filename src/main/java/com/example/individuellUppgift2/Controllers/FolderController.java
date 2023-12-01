@@ -33,7 +33,11 @@ public class FolderController {
             List<FolderDTO> folders = folderService.getAllFolders(username);
 
             if (folders != null) {
-                // ... (rest of the code)
+                for (FolderDTO folder : folders) {
+                    List<String> files = fileService.getFilesInFolder(username, folder.getFolderName());
+                    folder.setFiles(files);
+                }
+
                 return ResponseEntity.ok(folders);
             } else {
                 LOGGER.warning("Failed to retrieve folders for user: " + username);
@@ -49,6 +53,7 @@ public class FolderController {
             LOGGER.info("Request processing completed.");
         }
     }
+
 
 
     private String getUsernameFromAuthentication() {
