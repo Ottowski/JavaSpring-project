@@ -1,5 +1,8 @@
 package com.example.individuellUppgift2.Controllers;
+import com.example.individuellUppgift2.AppEntity.AppFolder;
+import com.example.individuellUppgift2.AppEntity.AppFile;
 import com.example.individuellUppgift2.DTO.FolderDTO;
+import com.example.individuellUppgift2.Repository.AppFolderRepository;
 import com.example.individuellUppgift2.Service.FolderService;
 import com.example.individuellUppgift2.Service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,45 +17,46 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/folders")
 public class FolderController {
+
+    private final AppFolderRepository folderRepository;
     private final FolderService folderService;
     private final FileService fileService;
     private static final Logger LOGGER = Logger.getLogger(FolderController.class.getName());
 
     @Autowired
-    public FolderController(FolderService folderService, FileService fileService) {
+    public FolderController(AppFolderRepository folderRepository, FolderService folderService, FileService fileService) {
+        this.folderRepository = folderRepository;
         this.folderService = folderService;
         this.fileService = fileService;
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllFoldersWithFiles() {
+    public ResponseEntity<List<FolderDTO>> getAllFoldersWithFiles() {
         String username = getUsernameFromAuthentication();
         LOGGER.info("Retrieving folders for user: " + username);
 
-        try {
-            List<FolderDTO> folders = folderService.getAllFolders(username);
+        // Retrieve all folders for the specific user
+        List<AppFolder> folders = folderRepository.findByUsername(username);
 
-            if (folders != null) {
-                for (FolderDTO folder : folders) {
-                    List<String> files = fileService.getFilesInFolder(username, folder.getFolderName());
-                    folder.setFiles(files);
-                }
+        // Map AppFolder entities to FolderDTO objects
+        List<FolderDTO> folderDTOs = folders.stream()
+                .map(folder -> {
+                    FolderDTO folderDTO = new FolderDTO();
+                    folderDTO.setFolderName(folder.getFolderName());
 
-                return ResponseEntity.ok(folders);
-            } else {
-                LOGGER.warning("Failed to retrieve folders for user: " + username);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("Failed to retrieve folders for user: " + username);
-            }
-        } catch (Exception e) {
-            LOGGER.severe("An error occurred while processing the request: " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while processing the request: " + e.getMessage());
-        } finally {
-            LOGGER.info("Request processing completed.");
-        }
+                    // Assuming you have a method to get file names from AppFolder entity
+                    List<String> fileNames = folder.getFiles().stream()
+                            .map(AppFile::getFilename)
+                            .toList();
+
+                    folderDTO.setFiles(fileNames);
+                    return folderDTO;
+                })
+                .toList();
+
+        return ResponseEntity.ok(folderDTOs);
     }
+
 
 
 

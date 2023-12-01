@@ -6,10 +6,13 @@ import java.util.List;
 @Getter
 @Setter
 public class FolderDTO {
+    @Getter
     private String folderName;
-    public String getFolderName() {
-        return folderName;
+
+    public FolderDTO() {
+
     }
+
     private List<String> files;
 
     // Constructors, getters, and setters

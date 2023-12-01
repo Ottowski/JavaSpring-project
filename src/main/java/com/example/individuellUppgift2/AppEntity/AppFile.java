@@ -16,13 +16,17 @@ public class AppFile {
     private Long id;
 
     @Column(nullable = false)
+    private String filename;
+
+    @ManyToOne
+    @JoinColumn(name = "folder_id", nullable = false)
+    private AppFolder folder;
+
+    @Column(nullable = false)
     private String username;
 
     @Column(nullable = false)
     private String folderName;
-
-    @Column(nullable = false)
-    private String filename;
 
     // Add more fields and relationships as needed
 
