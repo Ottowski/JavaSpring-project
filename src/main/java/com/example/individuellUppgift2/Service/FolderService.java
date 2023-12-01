@@ -6,20 +6,21 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class FolderService {
-
     private final AppFolderRepository folderRepository;
 
     public FolderService(AppFolderRepository folderRepository) {
         this.folderRepository = folderRepository;
     }
 
-    public void createFolder(String folderName) {
+    public void createFolder(String username) {
         AppFolder folder = new AppFolder();
+        String folderName = "";
         folder.setFolderName(folderName);
+        folder.setUsername(username);  // Set the username for the folder
         folderRepository.save(folder);
-        System.out.println("Folder created: " + folderName);
+        System.out.println("Folder created: " + folderName + " for user: " + username);
     }
-
+/*
     public AppFolder createFolder(String username, String folderName) {
         AppFolder folder = new AppFolder();
         folder.setFolderName(folderName);
@@ -30,6 +31,6 @@ public class FolderService {
     public void createFolder(String username, Object folderName) {
         System.out.println("Creating folder for user " + username + ": " + folderName);
     }
-    // Implement folder-related business logic, e.g., createFolder, deleteFolder, etc.
+    // Implement folder-related business logic, e.g., createFolder, deleteFolder, etc.*/
 }
 

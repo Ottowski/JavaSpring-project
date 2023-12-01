@@ -50,7 +50,7 @@ public class UserController {
         String username = userDetails.getUsername();
 
         // Call the folder service to create a new folder for the user
-        folderService.createFolder(username, folderDTO.getFolderName());
+        folderService.createFolder(username);
 
         return ResponseEntity.ok("Folder created successfully");
     }

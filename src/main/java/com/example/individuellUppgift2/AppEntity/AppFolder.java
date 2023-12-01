@@ -8,7 +8,6 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "folders")
-
 @Getter
 @Setter
 public class AppFolder {
@@ -18,4 +17,8 @@ public class AppFolder {
 
     @Column(nullable = false)
     private String folderName;
+
+    @Column(nullable = false)
+    private String username;  // Add this field to store the username
 }
+

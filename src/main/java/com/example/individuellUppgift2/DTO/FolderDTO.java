@@ -8,7 +8,7 @@ import lombok.Setter;
 public class FolderDTO {
 
     private String folderName;
-    public Object getFolderName() {
+    public String getFolderName() {
         return folderName;
     }
 }
