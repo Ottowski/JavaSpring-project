@@ -36,6 +36,8 @@ public class FileController {
         this.folderService = folderService;
     }
 
+    //endpoint: http://localhost:8080/api/files/upload
+    //from-data Key: file, Value: "name of file", Key: folderName, Value: "name of folder"
     @PostMapping("/upload")
     public ResponseEntity<String> handleFileUpload(
             @RequestParam("file") MultipartFile file,
@@ -76,6 +78,9 @@ public class FileController {
         }
     }
 
+    //endpoint: http://localhost:8080/api/files/download
+    //Params Key: filename, Value: "name of file"
+
     @GetMapping("/download")
     public <SpringResource> ResponseEntity<Object> downloadFile(@RequestParam("filename") String filename) {
         try {
@@ -95,12 +100,39 @@ public class FileController {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
             headers.setContentDispositionFormData("attachment", filename);
-
+            logger.info("File downloaded successfully. File name: {}", filename);
             return ResponseEntity.ok().headers(headers).body(resource);
         } catch (Exception e) {
             // Handle file not found or other exceptions
             logger.error("Error during file download: {}", e.getMessage(), e);
             return ResponseEntity.status(500).body(null);
+        }
+    }
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteFile(@RequestParam("filename") String filename) {
+        try {
+            String username = getUsernameFromAuthentication();
+
+            // Define the folder and file paths
+            String folderPath = UPLOAD_DIR + username + "/";
+            String filePath = folderPath + filename;
+
+            // Check if the file exists
+            Path filePathObj = Paths.get(filePath);
+            if (Files.exists(filePathObj)) {
+                // Delete the file
+                Files.delete(filePathObj);
+                // Add logic to delete the file record from the repository if needed
+                // fileRepository.deleteByFilename(filename);
+                logger.info("File deleted successfully. File name: {}", filename);
+                return ResponseEntity.ok("File deleted successfully. File name: " + filename);
+            } else {
+                logger.info("File not found. File name: {}", filename);
+                return ResponseEntity.status(404).body("File not found. File name: " + filename);
+            }
+        } catch (IOException e) {
+            logger.error("File deletion failed. Exception: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).body("File deletion failed. Please try again.");
         }
     }
 
