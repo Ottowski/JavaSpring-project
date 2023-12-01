@@ -10,11 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 @RestController
@@ -63,6 +64,21 @@ public class UserController {
         log.info("User registered successfully");
         return ResponseEntity.ok("User registered successfully");
     }
+    // Endpoint to get a list of registered users. http://localhost:8080/api/users
+    @GetMapping("/users")
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        // Retrieve all users from the database
+        List<AppUser> users = userRepository.findAll();
+
+        // Convert the list of AppUser entities to a list of UserDTOs
+        List<UserDTO> userDTOs = users.stream()
+                .map(user -> new UserDTO(user.getId(), user.getUsername(), user.getPassword()))
+                .collect(Collectors.toList());
+
+        // Return the list of UserDTOs in the response
+        return ResponseEntity.ok(userDTOs);
+    }
+
     // Endpoint for user login. http://localhost:8080/api/login {
     //  "username": "test@test.com",
     //  "password": "test"
