@@ -51,6 +51,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/register","/api/login","/api/folders/createFolder").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/files/upload").permitAll()  // Allow only authenticated users
                         .requestMatchers(HttpMethod.GET, "/api/files/download").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/api/files/delete").permitAll()
                         .anyRequest().permitAll())
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
