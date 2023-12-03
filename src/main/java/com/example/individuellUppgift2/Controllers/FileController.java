@@ -32,8 +32,8 @@ public class FileController {
     //from-data Key: file, Value: "name of file", Key: folderName, Value: "name of folder"
     @PostMapping("/upload")
     public ResponseEntity<String> handleFileUpload(
-            @RequestParam("file") MultipartFile file,
-            @RequestParam("folderName") String folderName) {
+            @RequestParam("folderName") String folderName,
+            @RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
             logger.info("File has not been selected");
             return ResponseEntity.badRequest().body("Please select a file to upload");

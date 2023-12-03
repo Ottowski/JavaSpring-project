@@ -76,6 +76,7 @@ public class FolderController {
         return username;
     }
 
+
     // Endpoint for creating a new folder. http://localhost:8080/api/folders/createFolder
     @PostMapping("/createFolder")
     public ResponseEntity<String> createFolder(@RequestBody FolderDTO folderDTO) {
