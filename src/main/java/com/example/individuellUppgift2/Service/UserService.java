@@ -11,6 +11,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.UUID;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -36,9 +38,19 @@ public class UserService {
         // Set username and encode the password.
         newUser.setUsername(userDTO.getUsername());
         newUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        // Set the user ID in the AppUser entity
+        newUser.setUserId(generateUserId());
         // Save the new user to the database.
         return userRepository.save(newUser);
     }
+
+    // Method to generate a unique user ID
+    private String generateUserId() {
+        // Implement your logic to generate a unique user ID
+        return UUID.randomUUID().toString();
+    }
+
+
 
     // Attempt to log in a user using the provided credentials.
     public Optional<AppUser> loginUser(String username, String password) {
@@ -61,17 +73,23 @@ public class UserService {
     }
 
     private AuthenticationResponse getAuthenticationResponse(AuthenticationRequest authenticationRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        authenticationRequest.getUsername(),
-                        authenticationRequest.getPassword()
-                )
-        );
-        AppUser user = (AppUser) authentication.getPrincipal();
-        UserDTO userDto = new UserDTO();
-        userDto.setUsername(user.getUsername());
+        // Find user by username in the database.
+        Optional<AppUser> user = userRepository.findByUsername(authenticationRequest.getUsername());
 
-        String jwt = jwtUtil.generateToken(userDto);
-        return new AuthenticationResponse(jwt, userDto);
+        if (user.isPresent()) {
+            // Create a UserDTO with the necessary information.
+            UserDTO userDto = new UserDTO();
+            userDto.setUsername(user.get().getUsername());
+
+            // Generate a token using the JWTUtil.
+            String jwt = jwtUtil.generateToken(userDto);
+
+            // Return the AuthenticationResponse.
+            return new AuthenticationResponse(jwt, userDto);
+        } else {
+            // Handle the case where the user is not found.
+            // You can throw an exception, return an error response, etc.
+            return null;
+        }
     }
 }

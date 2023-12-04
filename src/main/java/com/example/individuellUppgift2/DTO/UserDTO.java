@@ -20,6 +20,10 @@ public class UserDTO {
     }
     // Constructor with ID and a message for user not found.
     public UserDTO(int id, String userNotFound) {}
+
+    public UserDTO(String username) {
+    }
+
     // Override toString method for UserDTO.
     @Override
     public String toString() {

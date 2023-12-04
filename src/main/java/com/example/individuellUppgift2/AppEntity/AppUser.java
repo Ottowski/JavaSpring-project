@@ -17,7 +17,7 @@ import java.util.Collection;
 public class AppUser implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(name = "username", unique = true)
     private String username;
@@ -27,6 +27,10 @@ public class AppUser implements UserDetails {
 
     @Column(name = "accountNonLocked")
     private boolean accountNonLocked;
+
+    @Column(name = "user_id", nullable = false)
+    private String userId;  // Change the type to String
+
 
     public AppUser() {
         // default constructor

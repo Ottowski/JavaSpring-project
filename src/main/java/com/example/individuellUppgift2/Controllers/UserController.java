@@ -4,7 +4,7 @@ import com.example.individuellUppgift2.DTO.*;
 import com.example.individuellUppgift2.JWT.JWTUtil;
 import com.example.individuellUppgift2.Service.FileService;
 import com.example.individuellUppgift2.Service.FolderService;
-import com.example.individuellUppgift2.SecurityConfig;
+import com.example.individuellUppgift2.JWT.SecurityConfig;
 import com.example.individuellUppgift2.Repository.UserRepository;
 import com.example.individuellUppgift2.Service.UserService;
 import org.slf4j.Logger;
@@ -47,7 +47,7 @@ public class UserController {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
         // Call the folder service to create a new folder for the user
-        folderService.createFolder(username);
+        folderService.createFolder(Long.valueOf(username));
         return ResponseEntity.ok("Folder created successfully");
     }
     // Endpoint to get a list of registered users. http://localhost:8080/api/users
@@ -58,7 +58,7 @@ public class UserController {
 
         // Convert the list of AppUser entities to a list of UserDTOs
         List<UserDTO> userDTOs = users.stream()
-                .map(user -> new UserDTO(user.getId(), user.getUsername(), user.getPassword()))
+                .map(user -> new UserDTO(Math.toIntExact(user.getId()), user.getUsername(), user.getPassword()))
                 .collect(Collectors.toList());
 
         // Return the list of UserDTOs in the response
@@ -69,17 +69,31 @@ public class UserController {
     //  "password": "test"
     //}
 
+    // Endpoint for user register. http://localhost:8080/api/register {
+//  "username": "test@test.com",
+//  "password": "test"
+//}
     @PostMapping("/register")
     public ResponseEntity<AppUser> createUserWithRole(@RequestBody RegistrationUserDTO userRegistrationDTO) {
+        // Register the user
         AppUser savedUser = userService.registerUser(userRegistrationDTO);
+
         // Issue a JWT token and include it in the response headers
-        var token = jwtTokenService.issueToken(userRegistrationDTO.getUsername(), userRegistrationDTO.toString());
+        // Corrected usage of generateToken method
+        var jwtToken = jwtTokenService.generateToken(new UserDTO(savedUser.getUsername()));
 
+        // Generate JWT token
+        String generatedToken = jwtToken;
+        System.out.println("Issued Token: " + generatedToken);
+
+        // Return the response with the token in the Authorization header
         return ResponseEntity.ok()
-                .header(HttpHeaders.AUTHORIZATION, token)
+                .header(HttpHeaders.AUTHORIZATION, generatedToken)
                 .body(savedUser);
-
     }
+
+
+
 
     // Endpoint for user login. http://localhost:8080/api/login {
     //  "username": "test@test.com",

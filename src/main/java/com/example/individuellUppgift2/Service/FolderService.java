@@ -18,13 +18,13 @@ public class FolderService {
         this.folderRepository = folderRepository;
         this.fileService = fileService;
     }
-    public void createFolder(String username) {
+    public void createFolder(Long userId) {
         AppFolder folder = new AppFolder();
         String folderName = ""; // You should set the actual folder name
         folder.setFolderName(folderName);
-        folder.setUsername(username);
+        folder.setUsername(String.valueOf(userId));
         folderRepository.save(folder);
-        System.out.println("Folder created: " + folderName + " for user: " + username);
+        System.out.println("Folder created: " + folderName + " for user: " + userId);
     }
 
     public List<FolderDTO> getAllFolders(String username) {

@@ -27,6 +27,8 @@ public class AppFile {
 
     @Column(nullable = false)
     private String folderName;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
     // Add more fields and relationships as needed
 

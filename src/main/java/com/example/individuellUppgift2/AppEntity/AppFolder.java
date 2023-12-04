@@ -19,6 +19,8 @@ public class AppFolder {
 
     @Column(nullable = false)
     private String username;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
     @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL)
     private List<AppFile> files;
