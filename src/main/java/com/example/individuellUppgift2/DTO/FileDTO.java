@@ -5,7 +5,4 @@ import lombok.Setter;
 @Setter
 public class FileDTO {
     private String fileName;
-    public Object getfileName() {
-        return fileName;
-    }
 }

@@ -61,20 +61,15 @@ public class FileController {
             return ResponseEntity.status(500).body("File upload failed. Please try again.");
         }
     }
-    //endpoint: http://localhost:8080/api/files/download
-    //Params Key: filename, Value: "name of file"
+    //endpoint: http://localhost:8082/api/files/download
     @GetMapping("/download")
     public <SpringResource> ResponseEntity<Object> downloadFile(@RequestParam("filename") String filename) {
         try {
             String username = getUsernameFromAuthentication();
-            // Define the folder and file paths
             String folderPath = UPLOAD_DIR + username + "/";
             String filePath = folderPath + filename;
-            // Log file path
             logger.info("File path: {}", filePath);
-            // Load the file as a resource
             SpringResource resource = (SpringResource) new UrlResource(Paths.get(filePath).toUri());
-            // Set content type and attachment disposition
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
             headers.setContentDispositionFormData("attachment", filename);
@@ -86,20 +81,16 @@ public class FileController {
             return ResponseEntity.status(500).body(null);
         }
     }
+    //endpoint: http://localhost:8082/api/files/delete
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteFile(@RequestParam("filename") String filename) {
         try {
             String username = getUsernameFromAuthentication();
-            // Define the folder and file paths
             String folderPath = UPLOAD_DIR + username + "/";
             String filePath = folderPath + filename;
-            // Check if the file exists
             Path filePathObj = Paths.get(filePath);
             if (Files.exists(filePathObj)) {
-                // Delete the file
                 Files.delete(filePathObj);
-                // Add logic to delete the file record from the repository if needed
-                // fileRepository.deleteByFilename(filename);
                 logger.info("File deleted successfully. File name: {}", filename);
                 return ResponseEntity.ok("File deleted successfully. File name: " + filename);
             } else {

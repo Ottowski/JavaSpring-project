@@ -4,21 +4,17 @@ import lombok.Setter;
 import java.util.List;
 @Getter
 @Setter
-public class RegistrationUserDTO {
+public class RegisterDTO {
     private String username;
     private String password;
     private List<String> roles;
-
-
-    public RegistrationUserDTO() {
+    public RegisterDTO() {
     }
-
-    public RegistrationUserDTO(String username, String password, List<String> roles) {
+    public RegisterDTO(String username, String password, List<String> roles) {
         this.username = username;
         this.password = password;
         this.roles = roles;
     }
-
     @Override
     public String toString() {
         return "RegistrationUserDto{" +
