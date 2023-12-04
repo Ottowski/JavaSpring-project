@@ -1,5 +1,7 @@
 package com.example.individuellUppgift2.JWT;
 
+
+import com.example.individuellUppgift2.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,12 +20,12 @@ import java.io.IOException;
 @Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JWTUtil jwtUtil;
-    private final UserDetailsService userService;
+    private final JWTService jwtService;
+    private final CustomUserDetailsService userService;
 
-    public JWTAuthenticationFilter(JWTUtil jwtUtil, UserDetailsService userService) {
-        this.jwtUtil = jwtUtil;
-        this.userService = userService;
+    public JWTAuthenticationFilter(JWTService jwtService, UserDetailsService userService) {
+        this.jwtService = jwtService;
+        this.userService = (CustomUserDetailsService) userService;
     }
 
     @Override
@@ -42,12 +44,12 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         }
 //        if the user is not authenticated, we can authenticate the user and add the authentication object to the SecurityContextHolder
         String token = authorizationHeader.substring(7);
-        String email = jwtUtil.getSubject(token);
+        String email = jwtService.getSubject(token);
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userService.loadUserByUsername(email);
 
 //            this is done by calling the setAuthentication() method on the SecurityContextHolder
-            if (jwtUtil.validateToken(token, userDetails)) {
+            if (jwtService.validateToken(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()
                 );

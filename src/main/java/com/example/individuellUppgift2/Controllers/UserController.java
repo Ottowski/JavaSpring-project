@@ -1,7 +1,7 @@
 package com.example.individuellUppgift2.Controllers;
 import com.example.individuellUppgift2.AppEntity.AppUser;
 import com.example.individuellUppgift2.DTO.*;
-import com.example.individuellUppgift2.JWT.JWTUtil;
+import com.example.individuellUppgift2.JWT.JWTService;
 import com.example.individuellUppgift2.Service.FileService;
 import com.example.individuellUppgift2.Service.FolderService;
 import com.example.individuellUppgift2.SecurityConfig;
@@ -15,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,17 +29,17 @@ public class UserController {
     // Logger for logging information.
     private final FolderService folderService;
     private final UserService userService;
-    private final JWTUtil jwtTokenService;
+    private final JWTService jwtTokenService;
     private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
     // Constructor for UserController, injecting dependencies.
-    public UserController(UserService userService, JWTUtil jwtTokenService, UserRepository userRepository, PasswordEncoder passwordEncoder, FolderService folderService, FileService fileService) {
+    public UserController(UserService userService, JWTService jwtTokenService, UserRepository userRepository, PasswordEncoder passwordEncoder, FolderService folderService, FileService fileService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.folderService = folderService;
         this.userService = userService;
         this.jwtTokenService = jwtTokenService;
     }
-    // Endpoint for user folder. http://localhost:8080/api/folders
+    // Endpoint for user folder. http://localhost:8082/api/folders
     @PostMapping("/folders")
     public ResponseEntity<String> createFolder(@RequestBody FolderDTO folderDTO) {
         // Get the username of the authenticated user
@@ -50,7 +49,7 @@ public class UserController {
         folderService.createFolder(username);
         return ResponseEntity.ok("Folder created successfully");
     }
-    // Endpoint to get a list of registered users. http://localhost:8080/api/users
+    // Endpoint to get a list of registered users. http://localhost:8082/api/users
     @GetMapping("/users")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         // Retrieve all users from the database
@@ -64,7 +63,7 @@ public class UserController {
         // Return the list of UserDTOs in the response
         return ResponseEntity.ok(userDTOs);
     }
-    // Endpoint for user register. http://localhost:8080/api/register {
+    // Endpoint for user register. http://localhost:8082/api/register {
     //  "username": "test@test.com",
     //  "password": "test"
     //}
@@ -78,10 +77,9 @@ public class UserController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .body(savedUser);
-
     }
 
-    // Endpoint for user login. http://localhost:8080/api/login {
+    // Endpoint for user login. http://localhost:8082/api/login {
     //  "username": "test@test.com",
     //  "password": "test"
     //}

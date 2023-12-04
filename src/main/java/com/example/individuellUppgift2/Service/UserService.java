@@ -1,10 +1,11 @@
 package com.example.individuellUppgift2.Service;
+
 import com.example.individuellUppgift2.AppEntity.AppUser;
 import com.example.individuellUppgift2.DTO.AuthenticationRequest;
 import com.example.individuellUppgift2.DTO.AuthenticationResponse;
 import com.example.individuellUppgift2.DTO.RegistrationUserDTO;
 import com.example.individuellUppgift2.DTO.UserDTO;
-import com.example.individuellUppgift2.JWT.JWTUtil;
+import com.example.individuellUppgift2.JWT.JWTService;
 import com.example.individuellUppgift2.Repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,41 +15,38 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+
 @Service
 public class UserService {
-    // Password encoder for secure password storage.
+
+
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
-    private final JWTUtil jwtUtil;
+    private final JWTService jwtService;
 
     public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository,
-                       AuthenticationManager authenticationManager, JWTUtil jwtUtil) {
+                       AuthenticationManager authenticationManager, JWTService jwtService) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.authenticationManager = authenticationManager;
-        this.jwtUtil = jwtUtil;
-    }
-    // Register a new user using the provided UserDTO.
-    public AppUser registerUser(RegistrationUserDTO userDTO) {
-        // Create a new user entity.
-        AppUser newUser = new AppUser();
-        // Set username and encode the password.
-        newUser.setUsername(userDTO.getUsername());
-        newUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        // Save the new user to the database.
-        return userRepository.save(newUser);
+        this.jwtService = jwtService;
     }
 
-    // Attempt to log in a user using the provided credentials.
+
+    public AppUser registerUser(RegistrationUserDTO userDto) {
+        AppUser user = new AppUser();
+        user.setUsername(userDto.getUsername());
+        user.setRoles(userDto.getRoles());;
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        return userRepository.save(user);
+    }
+
     public Optional<AppUser> loginUser(String username, String password) {
-        // Find user by username in the database.
         Optional<AppUser> user = userRepository.findByUsername(username);
-        // Check if the user exists and the password matches.
         if (user.isPresent() && passwordEncoder.matches(password, user.get().getPassword())) {
             return user;
         }
-        // Return empty optional if login fails.
         return Optional.empty();
     }
     public List<AppUser> getAllUsers() {
@@ -70,8 +68,10 @@ public class UserService {
         AppUser user = (AppUser) authentication.getPrincipal();
         UserDTO userDto = new UserDTO();
         userDto.setUsername(user.getUsername());
+        userDto.setRoles(user.getRoles());
 
-        String jwt = jwtUtil.generateToken(userDto);
+        String jwt = jwtService.generateToken(userDto, userDto.getRoles());
         return new AuthenticationResponse(jwt, userDto);
     }
 }
+

@@ -1,32 +1,49 @@
 package com.example.individuellUppgift2.DTO;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Collection;
+import java.util.List;
+
 @Getter
 @Setter
 public class UserDTO {
-    // User ID.
-    private int id;
-    // User username.
     private String username;
-    // User password.
-    private String password;
-    // Default constructor.
-    public UserDTO() {}
-    // Constructor with ID, username, and password.
-    public UserDTO(int id, String username, String password) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
+    private Collection<String> roles;
+
+    public UserDTO() {
     }
-    // Constructor with ID and a message for user not found.
-    public UserDTO(int id, String userNotFound) {}
-    // Override toString method for UserDTO.
+
+    public UserDTO(String username, Collection<String> roles) {
+        this.username = username;
+        this.roles = roles;
+    }
+
+    public UserDTO(int id, String username, String password) {
+    }
+
     @Override
     public String toString() {
-        return "UserDTO{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
+        return "UserDto{" +
+                "username='" + username + '\'' +
+                ", role='" + roles + '\'' +
                 '}';
     }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public List<String> getRoles() {
+        return (List<String>) roles;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setRoles(Collection<String> roles) {
+        this.roles = roles;
+    }
+
 }
