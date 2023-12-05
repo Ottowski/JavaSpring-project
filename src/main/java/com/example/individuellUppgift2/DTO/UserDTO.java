@@ -6,11 +6,13 @@ import java.util.List;
 @Getter
 @Setter
 public class UserDTO {
+    private int id;
     private String username;
     private Collection<String> roles;
     public UserDTO() {
     }
-    public UserDTO(String username, Collection<String> roles) {
+    public UserDTO(int id, String username, Collection<String> roles) {
+        this.id = id;
         this.username = username;
         this.roles = roles;
     }

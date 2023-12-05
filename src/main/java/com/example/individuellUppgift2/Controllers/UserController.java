@@ -69,7 +69,7 @@ public class UserController {
 
         // Convert the list of AppUser entities to a list of UserDTOs
         List<UserDTO> userDTOs = users.stream()
-                .map(user -> new UserDTO(user.getId(), user.getUsername(), user.getPassword()))
+                .map(user -> new UserDTO(user.getId(), user.getUsername(), user.getRoles()))
                 .collect(Collectors.toList());
 
         // Return the list of UserDTOs in the response
