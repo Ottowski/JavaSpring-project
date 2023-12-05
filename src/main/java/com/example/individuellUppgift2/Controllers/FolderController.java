@@ -36,7 +36,7 @@ public class FolderController {
     public ResponseEntity<String> createFolder(@RequestBody FolderDTO folderDTO) {
         try {
             String username = getUsernameFromAuthentication();
-            folderService.createFolder(username);
+            folderService.createFolder(username, folderDTO);
             return ResponseEntity.ok("Folder created successfully");
         } catch (Exception e) {
             LOGGER.severe("An error occurred while creating the folder: " + e.getMessage());

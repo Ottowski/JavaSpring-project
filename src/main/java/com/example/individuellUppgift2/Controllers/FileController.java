@@ -1,6 +1,7 @@
 package com.example.individuellUppgift2.Controllers;
 import com.example.individuellUppgift2.Service.FileService;
 import com.example.individuellUppgift2.Service.FolderService;
+import com.example.individuellUppgift2.DTO.FolderDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,8 @@ public class FileController {
     //Endpoint for uploading a file in a folder: http://localhost:8080/api/files/upload
     // from-data Key: folderName, Value: "Nyfolder, Key: file (make sure its set on "file"), Value: "name of file"'
     // Auhtorization (Bearer Token) jwt token needed from user login
+    // ...
+
     @PostMapping("/upload")
     public ResponseEntity<String> handleFileUpload(
             @RequestParam("folderName") String folderName,
@@ -41,11 +44,18 @@ public class FileController {
         }
         try {
             String username = getUsernameFromAuthentication();
+
+            // Create a FolderDTO object and set the folder name
+            FolderDTO folderDTO = new FolderDTO();
+            folderDTO.setFolderName(folderName);
+
             // Create the folder using folderService
-            folderService.createFolder(username);
+            folderService.createFolder(username, folderDTO);
+
             // Define the folder and file paths
             String folderPath = UPLOAD_DIR + username + "/";
             String filePath = folderPath + file.getOriginalFilename();
+
             // Save the file to the server
             Path folderPathObj = Paths.get(folderPath);
             Path filePathObj = Paths.get(filePath);
@@ -53,6 +63,7 @@ public class FileController {
                 Files.createDirectories(folderPathObj);
             }
             Files.write(filePathObj, file.getBytes());
+
             // Call the fileService to handle the file upload logic
             String response = fileService.uploadFile(file);
             logger.info("File upload successful. File name: {}", file.getOriginalFilename());

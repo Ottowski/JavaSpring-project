@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 @Service
 public class FolderService {
     private final AppFolderRepository folderRepository;
@@ -15,13 +17,21 @@ public class FolderService {
         this.folderRepository = folderRepository;
         this.fileService = fileService;
     }
-    public void createFolder(String username) {
+    public void createFolder(String username, FolderDTO folderDTO) {
         AppFolder folder = new AppFolder();
-        String folderName = "";
+        String folderId = generateUniqueFolderId();
+        folder.setFolderId(folderId);
+
+        // Set the folder name from the folderDTO
+        String folderName = folderDTO.getFolderName();
         folder.setFolderName(folderName);
+
         folder.setUsername(username);
         folderRepository.save(folder);
         System.out.println("Folder created: " + folderName + " for user: " + username);
+    }
+    private String generateUniqueFolderId() {
+        return UUID.randomUUID().toString();
     }
     public List<FolderDTO> getAllFolders(String username) {
         List<AppFolder> folders = folderRepository.findByUsername(username);
