@@ -41,7 +41,6 @@ public class UserController {
         this.userService = userService;
         this.jwtTokenService = jwtTokenService;
     }
-    // Endpoint for user folder. http://localhost:8082/api/folders
     @PostMapping("/folders")
     public ResponseEntity<String> createFolder(@RequestBody FolderDTO folderDTO) {
         // Get the username of the authenticated user
@@ -52,6 +51,7 @@ public class UserController {
         return ResponseEntity.ok("Folder created successfully");
     }
     // Endpoint to get a list of registered users. http://localhost:8082/api/users
+    // Auhtorization (Bearer Token) jwt token needed from user login
     @GetMapping("/users")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         // Retrieve all users from the database
@@ -66,10 +66,10 @@ public class UserController {
         return ResponseEntity.ok(userDTOs);
     }
     // Endpoint for user register. http://localhost:8082/api/register {
+    // raw (JSON):
     //  "username": "test@test.com",
     //  "password": "test"
     //}
-
     @PostMapping("/register")
     public ResponseEntity<AppUser> createUserWithRole(@RequestBody RegisterDTO userRegistrationDTO) {
         AppUser savedUser = userService.registerUser(userRegistrationDTO);
@@ -80,11 +80,12 @@ public class UserController {
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .body(savedUser);
     }
-
-    // Endpoint for user login. http://localhost:8082/api/login {
+    // Endpoint for user to login. http://localhost:8082/api/login
+    // raw (JSON):
+    // {
     //  "username": "test@test.com",
     //  "password": "test"
-    //}
+    // }
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody JWTRequest JWTRequest) {
         JWTResponse response = userService.login(JWTRequest);

@@ -30,7 +30,7 @@ public class JWTService {
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(Date.from(Instant.now()))
-                .setExpiration(Date.from(Instant.now().plus(4, DAYS)))
+                .setExpiration(Date.from(Instant.now().plus(1, DAYS)))
                 .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
         System.out.println("Generated Token: " + token);

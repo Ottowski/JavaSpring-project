@@ -28,8 +28,9 @@ public class FileController {
         this.fileService = fileService;
         this.folderService = folderService;
     }
-    //endpoint: http://localhost:8080/api/files/upload
-    //from-data Key: file, Value: "name of file", Key: folderName, Value: "name of folder"
+    //Endpoint for uploading a file in a folder: http://localhost:8080/api/files/upload
+    // from-data Key: folderName, Value: "Nyfolder, Key: file (make sure its set on "file"), Value: "name of file"'
+    // Auhtorization (Bearer Token) jwt token needed from user login
     @PostMapping("/upload")
     public ResponseEntity<String> handleFileUpload(
             @RequestParam("folderName") String folderName,
@@ -61,7 +62,10 @@ public class FileController {
             return ResponseEntity.status(500).body("File upload failed. Please try again.");
         }
     }
-    //endpoint: http://localhost:8082/api/files/download
+    // Endpoint for downloading a file: http://localhost:8082/api/files/download
+    // Don't forget you have to have done the upload method first!
+    // Params Key: Key: file (make sure its set on "file"), Value: "name of file"'
+    // Auhtorization (Bearer Token) jwt token needed from user login
     @GetMapping("/download")
     public <SpringResource> ResponseEntity<Object> downloadFile(@RequestParam("filename") String filename) {
         try {
@@ -81,7 +85,10 @@ public class FileController {
             return ResponseEntity.status(500).body(null);
         }
     }
-    //endpoint: http://localhost:8082/api/files/delete
+    // Endpoint for deleting a file: http://localhost:8082/api/files/delete
+    // Don't forget you have to have done the download method first!
+    // Params Key: Key: file (make sure its set on "file"), Value: "name of file"'
+    // Auhtorization (Bearer Token) jwt token needed from user login
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteFile(@RequestParam("filename") String filename) {
         try {

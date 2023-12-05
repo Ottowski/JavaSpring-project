@@ -27,6 +27,11 @@ public class FolderController {
         this.fileService = fileService;
     }
     // Endpoint for creating a new folder. http://localhost:8082/api/folders/createFolder
+    // Auhtorization (Bearer Token) jwt token needed from user login
+    // raw (JSON):
+    // {
+    //    "folderName": "NyFolder"
+    // }
     @PostMapping("/createFolder")
     public ResponseEntity<String> createFolder(@RequestBody FolderDTO folderDTO) {
         try {
@@ -40,6 +45,8 @@ public class FolderController {
                     .body("An error occurred while creating the folder: " + e.getMessage());
         }
     }
+    // Endpoint to get a list of all folders. http://localhost:8082/api/folders/all
+    // Auhtorization (Bearer Token) jwt token needed from user login
     @GetMapping("/all")
     public ResponseEntity<List<FolderDTO>> getAllFoldersWithFiles() {
         String username = getUsernameFromAuthentication();
