@@ -25,9 +25,7 @@ public class UserDTO {
                 ", role='" + roles + '\'' +
                 '}';
     }
-    public String getUsername() {
-        return username;
-    }
+    public String getUsername() { return username; }
     public List<String> getRoles() {
         return (List<String>) roles;
     }

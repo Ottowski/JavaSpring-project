@@ -55,6 +55,7 @@ public class FolderController {
         List<FolderDTO> folderDTOs = folders.stream()
                 .map(folder -> {
                     FolderDTO folderDTO = new FolderDTO();
+                    folderDTO.setFolderId(folder.getFolderId());
                     folderDTO.setFolderName(folder.getFolderName());
                     List<String> fileNames = folder.getFiles().stream()
                             .map(AppFile::getFilename)
