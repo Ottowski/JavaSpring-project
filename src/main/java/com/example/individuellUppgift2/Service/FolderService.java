@@ -19,7 +19,7 @@ public class FolderService {
     }
     public void createFolder(String username, FolderDTO folderDTO) {
         AppFolder folder = new AppFolder();
-        String folderId = generateUniqueFolderId();
+        Long folderId = generateUniqueFolderId(); // Change the type to Long
         folder.setFolderId(folderId);
 
         // Set the folder name from the folderDTO
@@ -30,15 +30,18 @@ public class FolderService {
         folderRepository.save(folder);
         System.out.println("Folder created: " + folderName + " for user: " + username);
     }
-    private String generateUniqueFolderId() {
-        return UUID.randomUUID().toString();
+
+    private Long generateUniqueFolderId() {
+        return UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
     }
     public List<FolderDTO> getAllFolders(String username) {
         List<AppFolder> folders = folderRepository.findByUsername(username);
         List<FolderDTO> folderDTOs = new ArrayList<>();
         for (AppFolder folder : folders) {
             FolderDTO folderDTO = new FolderDTO();
+            folderDTO.setFolderId(folder.getFolderId());
             folderDTO.setFolderName(folder.getFolderName());
+            folderDTO.setUsername(username);
             List<String> fileNames = fileService.getFilesInFolder(username, folder.getFolderName());
             folderDTO.setFiles(fileNames);
             folderDTOs.add(folderDTO);

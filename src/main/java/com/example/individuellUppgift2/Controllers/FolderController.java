@@ -57,14 +57,18 @@ public class FolderController {
                     FolderDTO folderDTO = new FolderDTO();
                     folderDTO.setFolderId(folder.getFolderId());
                     folderDTO.setFolderName(folder.getFolderName());
+                    folderDTO.setUsername(username);
+                    // Add logging statement
+                    LOGGER.info("Fetching files for folder: " + folder.getFolderName());
                     List<String> fileNames = folder.getFiles().stream()
                             .map(AppFile::getFilename)
                             .toList();
-
                     folderDTO.setFiles(fileNames);
+                    folder.getFiles().size(); // Ensure files are initialized
                     return folderDTO;
                 })
                 .toList();
+
         return ResponseEntity.ok(folderDTOs);
     }
     private String getUsernameFromAuthentication() {
