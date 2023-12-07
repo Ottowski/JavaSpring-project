@@ -30,6 +30,10 @@ public class FolderService {
         folderRepository.save(folder);
         System.out.println("Folder created: " + folderName + " for user: " + username);
     }
+    public boolean folderExists(String username, String folderName) {
+        List<AppFolder> folders = folderRepository.findByUsernameAndFolderName(username, folderName);
+        return !folders.isEmpty();
+    }
 
     private Long generateUniqueFolderId() {
         return UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;

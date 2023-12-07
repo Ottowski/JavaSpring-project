@@ -30,7 +30,7 @@ public class FileController {
         this.folderService = folderService;
     }
     //Endpoint for uploading a file in a folder: http://localhost:8080/api/files/upload
-    // from-data Key: folderName, Value: "Nyfolder, Key: file (make sure its set on "file"), Value: "name of file"'
+    // from-data Key: folderName, Value: "The folder name", Key: file (make sure its set on "file"), Value: "name of file"
     // Auhtorization (Bearer Token) jwt token needed from user login
     // ...
 
@@ -45,14 +45,11 @@ public class FileController {
         try {
             String username = getUsernameFromAuthentication();
 
-            // Create a FolderDTO object and set the folder name
-            FolderDTO folderDTO = new FolderDTO();
-            folderDTO.setFolderName(folderName);
+            // Check if the folder exists
+            if (!folderService.folderExists(username, folderName)) {
+                return ResponseEntity.badRequest().body("Folder does not exist: " + folderName);
+            }
 
-            // Create the folder using folderService
-            folderService.createFolder(username, folderDTO);
-
-            // Define the folder and file paths
             String folderPath = UPLOAD_DIR + username + "/";
             String filePath = folderPath + file.getOriginalFilename();
 
@@ -65,7 +62,7 @@ public class FileController {
             Files.write(filePathObj, file.getBytes());
 
             // Call the fileService to handle the file upload logic
-            String response = fileService.uploadFile(file);
+            String response = fileService.uploadFile(file, username, folderName);
             logger.info("File upload successful. File name: {}", file.getOriginalFilename());
             return ResponseEntity.ok("File upload successful. File name: " + file.getOriginalFilename());
         } catch (IOException e) {
