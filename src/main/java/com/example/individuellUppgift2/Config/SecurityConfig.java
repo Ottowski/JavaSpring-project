@@ -1,8 +1,7 @@
-package com.example.individuellUppgift2;
-
-import com.example.individuellUppgift2.JWT.JWTAuthenticationFilter;
+package com.example.individuellUppgift2.Config;
+import com.example.individuellUppgift2.Service.UserDetailsService;
+import com.example.individuellUppgift2.Service.JWTService;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,25 +13,28 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import com.example.individuellUppgift2.JWT.JWTAuthenticationFilter;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 @EnableWebSecurity
-@EntityScan("com.example.individuellUppgift2.AppEntity")
 public class SecurityConfig {
-    private final CustomUserDetailsService CustomUserDetailsService;
+    private final UserDetailsService UserDetailsService;
     private final JWTAuthenticationFilter jwtAuthenticationFilter;
-    public SecurityConfig(CustomUserDetailsService CustomUserDetailsService, JWTAuthenticationFilter jwtAuthenticationFilter) {
-        this.CustomUserDetailsService = CustomUserDetailsService;
+    public SecurityConfig(UserDetailsService UserDetailsService, JWTAuthenticationFilter jwtAuthenticationFilter) {
+        this.UserDetailsService = UserDetailsService;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
     @Bean
-    public AuthenticationProvider authenticationProvider(@Qualifier("customUserDetailsService") UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+    public JWTAuthenticationFilter jwtAuthenticationFilter(JWTService jwtService, org.springframework.security.core.userdetails.UserDetailsService userService) {
+        return new JWTAuthenticationFilter(jwtService, userService);
+    }
+    @Bean
+    public AuthenticationProvider authenticationProvider(@Qualifier("customUserDetailsService") org.springframework.security.core.userdetails.UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setPasswordEncoder(passwordEncoder);
         provider.setUserDetailsService(userDetailsService);
@@ -44,18 +46,18 @@ public class SecurityConfig {
     }
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf ->csrf.disable())
+        http.csrf(AbstractHttpConfigurer::disable)
                 .cors(withDefaults())
                 .authorizeHttpRequests(configure -> configure
-                        .requestMatchers(HttpMethod.POST, "/api/register","/api/login","/api/folders/createFolder","/api/files/upload").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/files/download", "api/users", "api/folders/all").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/api/files/delete").permitAll()
-                        .anyRequest().permitAll())
+                        .requestMatchers(HttpMethod.POST, "/api/register","/api/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/folders/createFolder","/api/files/upload").hasAuthority("ROLE_USER")
+                        .requestMatchers(HttpMethod.GET, "/api/files/download", "api/users", "api/folders/all").hasAuthority("ROLE_USER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/files/delete").hasAuthority("ROLE_USER")
+                        .anyRequest().authenticated())
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider(CustomUserDetailsService, passwordEncoder()))
+                .authenticationProvider(authenticationProvider(UserDetailsService, passwordEncoder()))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
     @Bean

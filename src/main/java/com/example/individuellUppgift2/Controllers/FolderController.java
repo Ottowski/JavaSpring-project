@@ -13,57 +13,67 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import java.util.logging.Logger;
 import java.util.List;
-
 @RestController
 @RequestMapping("/api/folders")
 public class FolderController {
-
     private final AppFolderRepository folderRepository;
     private final FolderService folderService;
     private final FileService fileService;
     private static final Logger LOGGER = Logger.getLogger(FolderController.class.getName());
-
     @Autowired
     public FolderController(AppFolderRepository folderRepository, FolderService folderService, FileService fileService) {
         this.folderRepository = folderRepository;
         this.folderService = folderService;
         this.fileService = fileService;
     }
-
+    // Endpoint for creating a new folder. http://localhost:8082/api/folders/createFolder
+    // Auhtorization (Bearer Token) jwt token needed from user login
+    // raw (JSON):
+    // {
+    //    "folderName": "NyFolder"
+    // }
+    @PostMapping("/createFolder")
+    public ResponseEntity<String> createFolder(@RequestBody FolderDTO folderDTO) {
+        try {
+            String username = getUsernameFromAuthentication();
+            folderService.createFolder(username, folderDTO);
+            return ResponseEntity.ok("Folder created successfully");
+        } catch (Exception e) {
+            LOGGER.severe("An error occurred while creating the folder: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while creating the folder: " + e.getMessage());
+        }
+    }
+    // Endpoint to get a list of all folders. http://localhost:8082/api/folders/all
+    // Auhtorization (Bearer Token) jwt token needed from user login
     @GetMapping("/all")
     public ResponseEntity<List<FolderDTO>> getAllFoldersWithFiles() {
         String username = getUsernameFromAuthentication();
         LOGGER.info("Retrieving folders for user: " + username);
-
-        // Retrieve all folders for the specific user
         List<AppFolder> folders = folderRepository.findByUsername(username);
-
-        // Map AppFolder entities to FolderDTO objects
         List<FolderDTO> folderDTOs = folders.stream()
                 .map(folder -> {
                     FolderDTO folderDTO = new FolderDTO();
+                    folderDTO.setFolderId(folder.getFolderId());
                     folderDTO.setFolderName(folder.getFolderName());
-
-                    // Assuming you have a method to get file names from AppFolder entity
+                    folderDTO.setUsername(username);
+                    // Add logging statement
+                    LOGGER.info("Fetching files for folder: " + folder.getFolderName());
                     List<String> fileNames = folder.getFiles().stream()
                             .map(AppFile::getFilename)
                             .toList();
-
                     folderDTO.setFiles(fileNames);
+                    folder.getFiles().size(); // Ensure files are initialized
                     return folderDTO;
                 })
                 .toList();
 
         return ResponseEntity.ok(folderDTOs);
     }
-
-
-
-
     private String getUsernameFromAuthentication() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username;
-
         if (principal instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) principal;
             username = userDetails.getUsername();
@@ -72,23 +82,6 @@ public class FolderController {
         } else {
             throw new IllegalStateException("Unexpected principal type: " + principal.getClass());
         }
-
         return username;
-    }
-
-
-    // Endpoint for creating a new folder. http://localhost:8080/api/folders/createFolder
-    @PostMapping("/createFolder")
-    public ResponseEntity<String> createFolder(@RequestBody FolderDTO folderDTO) {
-        try {
-            String username = getUsernameFromAuthentication();
-            folderService.createFolder(username);
-            return ResponseEntity.ok("Folder created successfully");
-        } catch (Exception e) {
-            LOGGER.severe("An error occurred while creating the folder: " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while creating the folder: " + e.getMessage());
-        }
     }
 }
