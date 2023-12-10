@@ -30,6 +30,7 @@ public class FileController {
         this.folderService = folderService;
     }
     //Endpoint for uploading a file in a folder: http://localhost:8080/api/files/upload
+    // Don't forget you have to have done the createFolder method first!
     // from-data Key: folderName, Value: "The folder name", Key: file (make sure its set on "file"), Value: "name of file"
     // Auhtorization (Bearer Token) jwt token needed from user login
     // ...
@@ -72,7 +73,7 @@ public class FileController {
     }
     // Endpoint for downloading a file: http://localhost:8082/api/files/download
     // Don't forget you have to have done the upload method first!
-    // Params Key: Key: file (make sure its set on "file"), Value: "name of file"'
+    // Params Key: Key: filename (make sure its set on "file"), Value: "name of file"'
     // Auhtorization (Bearer Token) jwt token needed from user login
     @GetMapping("/download")
     public <SpringResource> ResponseEntity<Object> downloadFile(@RequestParam("filename") String filename) {
@@ -95,7 +96,7 @@ public class FileController {
     }
     // Endpoint for deleting a file: http://localhost:8082/api/files/delete
     // Don't forget you have to have done the download method first!
-    // Params Key: Key: file (make sure its set on "file"), Value: "name of file"'
+    // Params Key: Key: filename (make sure its set on "file"), Value: "name of file"'
     // Auhtorization (Bearer Token) jwt token needed from user login
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteFile(@RequestParam("filename") String filename) {
